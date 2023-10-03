@@ -1,0 +1,104 @@
+[gd_scene load_steps=8 format=3 uid="uid://y8hwusp5m4vu"]
+
+[ext_resource type="Script" path="res://Brick/Brick.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dxlyjy4f1upst" path="res://Assets/bubble.png" id="2"]
+
+[sub_resource type="Curve" id="2"]
+_data = [Vector2(0.00347423, 0.513514), 0.0, 0.0, 0, 0, Vector2(0.510712, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="3"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Shader" id="4"]
+code = "/*
+Shader from Godot Shaders - the free shader library.
+godotshaders.com/shader/teleport-effect
+
+This shader is under CC0 license. Feel free to use, improve and 
+change this shader according to your needs and consider sharing 
+the modified result on godotshaders.com.
+*/
+
+shader_type canvas_item;
+
+uniform float progress : hint_range(0.0, 1.0);
+uniform float noise_desnity = 60;
+uniform float beam_size : hint_range(0.01, 0.15);
+uniform vec4 color : source_color = vec4(0.0, 1.02, 1.2, 1.0);
+
+// We are generating our own noise here. You could experiment with the 
+// built in SimplexNoise or your own noise texture for other effects.
+vec2 random(vec2 uv){
+    uv = vec2( dot(uv, vec2(127.1,311.7) ),
+               dot(uv, vec2(269.5,183.3) ) );
+    return -1.0 + 2.0 * fract(sin(uv) * 43758.5453123);
+}
+
+float noise(vec2 uv) {
+    vec2 uv_index = floor(uv);
+    vec2 uv_fract = fract(uv);
+
+    vec2 blur = smoothstep(0.0, 1.0, uv_fract);
+
+    return mix( mix( dot( random(uv_index + vec2(0.0,0.0) ), uv_fract - vec2(0.0,0.0) ),
+                     dot( random(uv_index + vec2(1.0,0.0) ), uv_fract - vec2(1.0,0.0) ), blur.x),
+                mix( dot( random(uv_index + vec2(0.0,1.0) ), uv_fract - vec2(0.0,1.0) ),
+                     dot( random(uv_index + vec2(1.0,1.0) ), uv_fract - vec2(1.0,1.0) ), blur.x), blur.y) * 0.5 + 0.5;
+}
+
+void fragment()
+{
+	vec4 tex = texture(TEXTURE, UV);
+	
+	float noise = noise(UV * noise_desnity) * UV.y;
+	
+	float d1 = step(progress, noise);
+	float d2 = step(progress - beam_size, noise);
+	
+	vec3 beam = vec3(d2 - d1) * color.rgb;
+	
+	tex.rgb += beam;
+	tex.a *= d2;
+	
+	COLOR = tex;
+}"
+
+[sub_resource type="ShaderMaterial" id="5"]
+shader = SubResource("4")
+shader_parameter/progress = 0.0
+shader_parameter/noise_desnity = 60.0
+shader_parameter/beam_size = null
+shader_parameter/color = Color(0, 1.02, 1.2, 1)
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(90, 30)
+
+[node name="Brick" type="StaticBody2D"]
+script = ExtResource("1")
+
+[node name="Confetti" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 25
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.5
+texture = ExtResource("2")
+emission_shape = 2
+emission_sphere_radius = 1.0
+direction = Vector2(0, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+scale_amount_curve = SubResource("2")
+color_ramp = SubResource("3")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("5")
+use_parent_material = true
+offset_left = -45.0
+offset_top = -15.0
+offset_right = 45.0
+offset_bottom = 15.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
