@@ -11,7 +11,6 @@ The expectations for this exercise are that you will
  - [ ] Add shaders to the main menu background, the fever bar, and the game backgound (when in fever mode)
  - [ ] Animate the game background (cycle through colors)
  - [ ] Add a face to the paddle that reacts to the ball
- - [ ] Add a WorldEnvironment to introduce blur and glow to the game elements
  - [ ] Edit the LICENSE and README.md
  - [ ] Commit and push your changes back to GitHub. Turn in the URL of your repository on Canvas.
 
@@ -29,7 +28,7 @@ If you run the project, you will see a main menu followed by a simple brick-brea
 
 ## Adding Shaders
 
-Our first step will be to add some shaders to our project. To make the main menu a bit more visually interesting, we are going to add a shader to the background. Open `res://UI/Main_Menu.tscn`. Select the Background node. In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Then Edit the new Shader Material and add a New Shader. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
+Our first step will be to add some shaders to our project. To make the main menu a bit more visually interesting, we are going to add a shader to the background. Open `res://UI/Main_Menu.tscn`. Select the Background node. In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Then Edit the new Shader Material and add a New Shader. Save the shader as `res://Effects/Main_Menu.gdshader`. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
 ```
 // Water shader
 
@@ -41,9 +40,9 @@ uniform float tide = 0.1;
 uniform float foamthickness = 0.1;
 uniform float timescale = 1.0;
 uniform float waterdeep = 0.3;
-uniform vec4 WATER_COL : hint_color =  vec4(0.1, 0.44, 0.76, 1.0);
-uniform vec4 WATER2_COL : hint_color =  vec4(0.09, 0.39, 0.67, 1.0);
-uniform vec4 FOAM_COL : hint_color = vec4(0.13, 0.55, 0.9, 1.0);
+uniform vec4 WATER_COL : source_color =  vec4(0.1, 0.44, 0.76, 1.0);
+uniform vec4 WATER2_COL : source_color =  vec4(0.09, 0.39, 0.67, 1.0);
+uniform vec4 FOAM_COL : source_color = vec4(0.13, 0.55, 0.9, 1.0);
 
 
 float rand(vec2 input){
@@ -92,7 +91,7 @@ When you go back to the 2D view, you should now see the background appear as ani
 
 Next, we will add some shaders when we go into fever mode.
 
-When fever mode starts, we want to add a fire shader to the fever bar. In `res://UI/HUD.tscn`, select the Fever node.  In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Then Edit the new Shader Material and add a New Shader. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
+When fever mode starts, we want to add a fire shader to the fever bar. In `res://UI/HUD.tscn`, select the Fever node.  In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Save the shader as `res://Effects/Fever.gdshader`. Then Edit the new Shader Material and add a New Shader. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
 ```
 // Fire shader
 
@@ -218,7 +217,7 @@ func update_fever():
 
 
 
-In `res://Game.tscn`, select the Background node. In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Then Edit the new Shader Material and add a New Shader. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
+In `res://Game.tscn`, select the Background node. In the Inspector panel, select CanvasItem->Material->Material: New Shader Material. Save the shader as `res://Effects/Game.gdshader`. Then Edit the new Shader Material and add a New Shader. Edit that Shader and paste the following into the shader editor that appears at the bottom of the window:
 ```
 // Fireworks shader
 // Based on shadertoy shader by Martijn Steinrucken aka BigWings - 2015 
@@ -226,7 +225,6 @@ In `res://Game.tscn`, select the Background node. In the Inspector panel, select
 
 shader_type canvas_item;
 
-uniform float PI = 3.141592653589793238;
 uniform float TWOPI = 6.283185307179586 ;
 uniform float NUM_EXPLOSIONS = 8.0;
 uniform float NUM_PARTICLES = 70.0;
@@ -411,22 +409,6 @@ func _physics_process(_delta):
 		$Eye2/Pupil/Sprite.position.x = 0
 		$Mouth.scale.y = 1
 ```
-
-## WorldEnvironment
-
-In `Game.tscn`, right-click on the Wall_Container node and Change Type. Select CanvasLayer (we don't want the walls to bleed into the rest of the game once we add the WorldEnvironment).
-
-Now, right-click on the Game node and Add Child Node. Select WorldEnvironment. Tap on the WorldEnvironment node and in the Inspector, select Envrionment->New Environment. Then Edit that new Enviornment:
- * Background->Mode: Canvas
- * DOF Near Blur->Enabled: On
- * DOF Near Blur->Distance: 1.3
- * Glow->Enabled: On
- * Glow->Bloom: 0.03
- * Glow->Blend Mode: Additive
- * Glow->Bicubic Upscale: ON
-
-*If the Background Mode is set to anything other then Canvas, the results won't be visible. Make sure you don't miss that step.*
-
 ---
 
 Test the game and make sure it is working correctly. You should be able to see the combination of all the effects we have added (including fever mode when you click the mouse button).
