@@ -368,7 +368,7 @@ func update_color():
 		tween.kill()
 	tween = create_tween()
 	tween.tween_property(self, "color", colors[c], 2.0)
-	tween.tween_completed(_tween_completed)
+	tween.tween_callback(_tween_completed)
 
 func _tween_completed():
 	c = wrapi(c+1, 0, colors.size())
