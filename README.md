@@ -208,7 +208,7 @@ Edit `res://UI/HUD.gd`. Replace the `update_fever` function with the following:
 ```
 func update_fever():
 	$Fever.value = Global.fever
-	var styleBox = $Fever.get("custom_styles/fg")
+	var styleBox = $Fever.get("theme_override_styles/fill")
 	styleBox.bg_color.h = fever_h
 	styleBox.bg_color.s = (Global.fever / 100.0) * fever_s
 	styleBox.bg_color.v = (fever_v/2) + ((Global.fever / 100.0) * (fever_v/2)) 
