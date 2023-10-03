@@ -13,7 +13,7 @@ func _physics_process(_delta):
 			ball_audio.play()
 		Global.update_lives(-1)
 		Global.update_fever(-Global.fever)
-		var camera = get_node_or_null("/root/Game/Camera3D")
+		var camera = get_node_or_null("/root/Game/Camera")
 		if camera != null:
 			camera.add_trauma(3.0)
 		make_ball()
