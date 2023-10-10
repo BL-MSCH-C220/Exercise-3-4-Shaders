@@ -204,6 +204,8 @@ func _on_Timer_timeout():
 
 When the game is not in fever mode, we would like to make the fever bar a little more colorful.
 
+Select the Fever node and go to the Inspector Panel. Under Control->Theme Overrides->Styles->Fill, create a new StyleBox Flat.
+
 Edit `res://UI/HUD.gd`. Replace the `update_fever` function with the following:
 ```
 func update_fever():
